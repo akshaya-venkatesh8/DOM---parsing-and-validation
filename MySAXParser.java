@@ -14,7 +14,7 @@ import org.xml.sax.XMLReader;
  *
  * @author akshaya
  */
-public class SAXParsing {
+public class MySAXParser {
     /**
      * @param args the command line arguments
      * @throws javax.xml.parsers.ParserConfigurationException
@@ -26,21 +26,22 @@ public class SAXParsing {
          SAXParserFactory factory = SAXParserFactory.newInstance();
          factory.setValidating(true);
          factory.setNamespaceAware(true);
+         
          SAXParser saxParser = factory.newSAXParser();
+         
+         USAddressHandler userhandler = new USAddressHandler();
+         
          saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, "http://www.w3.org/2001/XMLSchema");
          saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File("address.xsd"));
-         XMLReader reader = saxParser.getXMLReader();
-         InvalidXMLErrorHandler seh = new InvalidXMLErrorHandler();
-         reader.setErrorHandler(seh);
-         reader.parse(new InputSource("address.xml"));
-         if(seh.check == null){
-         USAddressHandler userhandler = new USAddressHandler();
-         saxParser.parse("address.xml", userhandler);
-         Address add= userhandler.getAddress();
-         System.out.println(add);
+         saxParser.getXMLReader().setErrorHandler(userhandler);
+         
+         if(userhandler.check == null){
+                saxParser.parse("address.xml", userhandler);
+                Address add= userhandler.getAddress();
+                System.out.println(add);
          }
       } 
-         catch (Exception e) {
+      catch (Exception e) {
              System.out.println(e);
       }
     }
